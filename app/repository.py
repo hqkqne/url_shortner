@@ -1,10 +1,21 @@
-from db import get_db
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
+
+from schemas import URLCreate, URLResponse
+from models import URLShort
+
 
 class UrlRepository:
-    @classmethod
-    async def add_one(cls):
-        pass
+    def __init__(self, session: AsyncSession):
+        self.session = session
 
-    @classmethod
-    async def get_by_short(cls):
-        pass
+    async def add_one(self, url: URLShort):
+        self.session.add(url)
+        await self.session.commit()
+        return url
+
+    async def get_by_short(self, short_url: str):
+        result = await self.session.execute(
+            select(URLShort).where(URLShort.short_url == short_url)
+        )
+        return result.scalar_one_or_none()
