@@ -7,12 +7,17 @@ class ServiceUrl:
         self.repo = repo
         self.sqids = Sqids(min_length= 5)
 
-    async def create_short_url(self, long: str):
-        #generate slug
-        url = URLShort(short_url = ... ,original_url= long)
-        await self.repo.add_one(url)
-        return url
+    async def create_short_url(self, original_url: str)-> str:
+        db_url = await self.repo.add_one(
+            original_url = original_url, short_url = 'pending'
+        )
+        short_url = self.sqids.encode([db_url.id])
+        db_url.short_url = short_url
+        await self.repo.session.commit()
+        return short_url
 
-    async def get_original_url(self, short: str)-> str:
-        url = await self.repo.get_by_short(short)
-        return short
+    async def get_original_url(self, short_url: str)-> str:
+        url = await self.repo.get_by_short(short_url)
+        if url is None:
+            return None
+        return url.original_url

@@ -8,11 +8,11 @@ class UrlRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def add_one(self, url: URLShort)->URLShort:
-        self.session.add(url)
-        await self.session.commit()
-        await self.session.refresh(url)
-        return url
+    async def add_one(self, original_url: str, short_url: str)->URLShort:
+        db_url = URLShort(original_url = original_url, short_url = short_url)
+        self.session.add(db_url)
+        await self.session.flush()
+        return db_url
 
     async def get_by_short(self, short_url: str)-> URLShort| None:
         result = await self.session.execute(
