@@ -2,7 +2,7 @@ from repository import UrlRepository
 from models import URLShort
 from sqids import Sqids
 
-class ServiceUrl():
+class ServiceUrl:
     def __init__(self, repo: UrlRepository):
         self.repo = repo
         self.sqids = Sqids(min_length= 5)
@@ -13,6 +13,6 @@ class ServiceUrl():
         await self.repo.add_one(url)
         return url
 
-    async def get_long_url(self, short: str)-> str:
+    async def get_original_url(self, short: str)-> str:
         url = await self.repo.get_by_short(short)
         return short

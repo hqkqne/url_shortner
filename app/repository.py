@@ -11,10 +11,10 @@ class UrlRepository:
     async def add_one(self, url: URLShort)->URLShort:
         self.session.add(url)
         await self.session.commit()
-        await self.session.refresh()
+        await self.session.refresh(url)
         return url
 
-    async def get_by_short(self, short_url: str):
+    async def get_by_short(self, short_url: str)-> URLShort| None:
         result = await self.session.execute(
             select(URLShort).where(URLShort.short_url == short_url)
         )
