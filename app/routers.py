@@ -1,10 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, Response
-from typing import Annotated
-
+from fastapi import APIRouter, Depends, HTTPException
 from starlette.responses import RedirectResponse
-
-from service import get_service
-from app.service import ServiceUrl
+from service import get_service, ServiceUrl
 from schemas import *
 
 
@@ -22,11 +18,11 @@ async def append_url(
 
 @router.get("/{short}")
 async def redirect(
-    slug: str,
+    short: str,
     service: ServiceUrl = Depends(get_service)
 ):
 
-    original_url = await service.get_original_url(slug)
+    original_url = await service.get_original_url(short)
     if not original_url:
         raise HTTPException(status_code= 404, detail= 'Not found')
     return RedirectResponse(url = original_url, status_code= 307)

@@ -1,6 +1,7 @@
+from sqlalchemy.exc import IntegrityError
+
 from repository import UrlRepository
 from fastapi import Depends
-from models import URLShort
 from sqids import Sqids
 
 from repository import get_repo
@@ -16,10 +17,14 @@ class ServiceUrl:
         )
         short_url = self.sqids.encode([db_url.id])
         db_url.short_url = short_url
-        await self.repo.session.commit()
+        try:
+            await self.repo.session.commit()
+        except IntegrityError:
+            await self.repo.session.rollback()
+            raise ValueError("already exists")
         return short_url
 
-    async def get_original_url(self, short_url: str)-> str:
+    async def get_original_url(self, short_url: str)-> str| None:
         url = await self.repo.get_by_short(short_url)
         if url is None:
             return None

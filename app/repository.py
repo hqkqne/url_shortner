@@ -3,7 +3,6 @@ from fastapi import Depends
 from sqlalchemy import select
 
 from db import get_db
-from schemas import URLCreate, URLResponse
 from models import URLShort
 
 class UrlRepository:
@@ -14,6 +13,7 @@ class UrlRepository:
         db_url = URLShort(original_url = original_url, short_url = short_url)
         self.session.add(db_url)
         await self.session.flush()
+        await self.session.refresh(db_url)
         return db_url
 
     async def get_by_short(self, short_url: str)-> URLShort| None:
