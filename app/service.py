@@ -1,6 +1,9 @@
 from repository import UrlRepository
+from fastapi import Depends
 from models import URLShort
 from sqids import Sqids
+
+from repository import get_repo
 
 class ServiceUrl:
     def __init__(self, repo: UrlRepository):
@@ -21,3 +24,6 @@ class ServiceUrl:
         if url is None:
             return None
         return url.original_url
+
+async def get_service(repo: UrlRepository = Depends(get_repo))-> ServiceUrl:
+    return ServiceUrl(repo)

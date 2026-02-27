@@ -1,6 +1,8 @@
 from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import Depends
 from sqlalchemy import select
 
+from db import get_db
 from schemas import URLCreate, URLResponse
 from models import URLShort
 
@@ -19,3 +21,6 @@ class UrlRepository:
             select(URLShort).where(URLShort.short_url == short_url)
         )
         return result.scalar_one_or_none()
+
+async def get_repo(session: AsyncSession = Depends(get_db))-> UrlRepository:
+    return UrlRepository(session)
