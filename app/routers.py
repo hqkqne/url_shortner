@@ -14,7 +14,9 @@ async def append_url(
         service: ServiceUrl = Depends(get_service)
 ):
     slug = await service.create_short_url(str(data.url))
-    return {"short_url": slug, "original url" : str(data.url)}
+
+    # return {"short_url": slug, "original url" : str(data.url)}
+    return URLResponse(short_url=slug, original_url=str(data.url))
 
 @router.get("/{short}")
 async def redirect(
